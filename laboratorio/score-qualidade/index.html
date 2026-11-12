@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de score de qualidade · Laboratório</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    :root { --papel:#F3F5F4; --sup:#fff; --tinta:#17242B; --tinta2:#46565E; --pinho:#17686B; --linha:#D5DCDA;
+            --ok:#1D6B3A; --atencao:#8A5316; --critico:#A3281F; color-scheme: light dark; }
+    @media (prefers-color-scheme: dark) { :root { --papel:#101A1E; --sup:#16242A; --tinta:#E8EEEC; --tinta2:#A9B8BD;
+            --pinho:#5CC0C3; --linha:#2A3B42; --ok:#6FD08F; --atencao:#E5AB68; --critico:#FF8A80; } }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--papel); color:var(--tinta); font:400 1rem/1.55 "IBM Plex Sans",system-ui,sans-serif; padding:24px 20px 56px; }
+    main { max-width: 720px; margin: 0 auto; }
+    a { color: var(--pinho); }
+    h1 { font:700 clamp(1.6rem,4vw,2.1rem)/1.15 "Bricolage Grotesque",system-ui,sans-serif; margin:20px 0 8px; }
+    p.lead { color:var(--tinta2); margin:0 0 24px; max-width:60ch; }
+    table { width:100%; border-collapse:collapse; background:var(--sup); border:1px solid var(--linha); border-radius:10px; overflow:hidden; }
+    th, td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--linha); }
+    th { font-weight:600; font-size:.9rem; color:var(--tinta2); }
+    input { width:100%; font:inherit; color:inherit; background:var(--papel); border:1.5px solid var(--linha); border-radius:6px; padding:7px 9px; }
+    input[type=number] { max-width:96px; }
+    input:focus-visible, button:focus-visible { outline:3px solid #B8742A; outline-offset:2px; }
+    button { font:600 .95rem "IBM Plex Sans",system-ui,sans-serif; cursor:pointer; border-radius:7px; padding:8px 14px; border:1.5px solid var(--pinho); background:transparent; color:var(--pinho); }
+    button:hover { background:var(--pinho); color:var(--papel); }
+    .acoes { display:flex; gap:12px; margin:14px 0 28px; flex-wrap:wrap; }
+    .faixas { display:flex; gap:16px; flex-wrap:wrap; align-items:end; margin-bottom:24px; }
+    .faixas label { display:grid; gap:4px; font-size:.9rem; color:var(--tinta2); }
+    .resultado { background:var(--sup); border:1px solid var(--linha); border-radius:12px; padding:20px 22px; }
+    .valor { font:700 clamp(2.4rem,8vw,3.4rem)/1 "Bricolage Grotesque",system-ui,sans-serif; }
+    .status { font-weight:600; margin-top:6px; }
+    .status[data-s="ok"] { color:var(--ok); } .status[data-s="atencao"] { color:var(--atencao); } .status[data-s="critico"] { color:var(--critico); }
+    .formula { color:var(--tinta2); font-size:.92rem; margin-top:10px; }
+    .sr { position:absolute; left:-999px; }
+  </style>
+</head>
+<body>
+<main>
+  <a href="../../#laboratorio">← Voltar ao laboratório</a>
+  <h1>Calculadora de score de qualidade</h1>
+  <p class="lead">Cada regra tem uma conformidade (registros que passam ÷ registros avaliados) e um peso. O score do domínio é a média ponderada.</p>
+
+  <div class="faixas">
+    <label>Verde a partir de (%)<input type="number" id="verde" value="95" min="0" max="100" step="0.5"></label>
+    <label>Amarelo a partir de (%)<input type="number" id="amarelo" value="85" min="0" max="100" step="0.5"></label>
+  </div>
+
+  <table>
+    <thead><tr><th scope="col">Regra</th><th scope="col">Conformidade (%)</th><th scope="col">Peso</th><th scope="col"><span class="sr">Remover</span></th></tr></thead>
+    <tbody id="linhas"></tbody>
+  </table>
+  <div class="acoes"><button type="button" id="mais">Adicionar regra</button></div>
+
+  <section class="resultado" aria-live="polite">
+    <div class="valor" id="valor">–</div>
+    <div class="status" id="status"></div>
+    <div class="formula" id="formula"></div>
+  </section>
+</main>
+
+<script>
+  var padrao = [["Completude", 95, 3], ["Validade", 88, 2], ["Unicidade", 99, 3]];
+  var corpo = document.getElementById("linhas");
+
+  function linha(n, c, p) {
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td><input type="text" aria-label="Nome da regra" value="' + n + '"></td>' +
+      '<td><input type="number" aria-label="Conformidade em %" min="0" max="100" step="0.1" value="' + c + '"></td>' +
+      '<td><input type="number" aria-label="Peso" min="0" step="1" value="' + p + '"></td>' +
+      '<td><button type="button" aria-label="Remover regra">Remover</button></td>';
+    tr.querySelector("button").onclick = function () { tr.remove(); calcular(); };
+    tr.addEventListener("input", calcular);
+    corpo.appendChild(tr);
+  }
+
+  function fmt(x) { return x.toFixed(2).replace(".", ",") + "%"; }
+
+  function calcular() {
+    var soma = 0, pesos = 0, termos = [];
+    corpo.querySelectorAll("tr").forEach(function (tr) {
+      var i = tr.querySelectorAll("input");
+      var c = parseFloat(i[1].value), p = parseFloat(i[2].value);
+      if (isNaN(c) || isNaN(p) || p <= 0) return;
+      soma += c * p; pesos += p; termos.push(c + "×" + p);
+    });
+    var v = document.getElementById("valor"), s = document.getElementById("status"), f = document.getElementById("formula");
+    if (!pesos) { v.textContent = "–"; s.textContent = "Informe ao menos uma regra com peso maior que zero."; s.removeAttribute("data-s"); f.textContent = ""; return; }
+    var score = soma / pesos;
+    var verde = parseFloat(document.getElementById("verde").value), amarelo = parseFloat(document.getElementById("amarelo").value);
+    v.textContent = fmt(score);
+    if (score >= verde) { s.textContent = "Verde: dentro da meta"; s.dataset.s = "ok"; }
+    else if (score >= amarelo) { s.textContent = "Amarelo: atenção"; s.dataset.s = "atencao"; }
+    else { s.textContent = "Vermelho: abaixo do limite"; s.dataset.s = "critico"; }
+    f.textContent = "(" + termos.join(" + ") + ") ÷ " + pesos + " = " + fmt(score);
+  }
+
+  padrao.forEach(function (r) { linha(r[0], r[1], r[2]); });
+  document.getElementById("mais").onclick = function () { linha("Nova regra", 100, 1); calcular(); };
+  document.getElementById("verde").oninput = document.getElementById("amarelo").oninput = calcular;
+  calcular();
+</script>
+</body>
+</html>
