@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nestor Araujo · Engenharia e governança de dados</title>
+  <meta name="description" content="Portfólio de Nestor Araujo: projetos, experimentos, guias publicados e currículo em engenharia e governança de dados.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2317686B'/%3E%3Ccircle cx='28' cy='50' r='9' fill='%23fff'/%3E%3Ccircle cx='72' cy='28' r='9' fill='%23fff'/%3E%3Ccircle cx='72' cy='72' r='9' fill='%23B8742A'/%3E%3Cpath d='M36 47 63 31M36 53 63 69' stroke='%23fff' stroke-width='5' fill='none'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="lateral">
+    <a class="marca" href="#inicio" aria-label="Nestor Araujo, início">
+      <span class="marca-sigla" aria-hidden="true">NA</span>
+      <span class="marca-texto">
+        <strong id="site-nome">Nestor Araujo</strong>
+        <span id="site-papel">Engenheiro de dados</span>
+      </span>
+    </a>
+    <nav class="menu" aria-label="Seções do site">
+      <a href="#projetos">Projetos</a>
+      <a href="#laboratorio">Laboratório</a>
+      <a href="#publicacoes">Publicações</a>
+      <a href="#colaboracoes">Ideias e colaborações</a>
+      <a href="#curriculo">Resumo profissional</a>
+    </nav>
+    <ul class="contato-lateral" id="contato-lateral"></ul>
+  </header>
+
+  <main id="conteudo">
+    <section id="inicio" class="hero" aria-labelledby="hero-titulo">
+      <h1 id="hero-titulo">Dados confiáveis, do pipeline ao painel.</h1>
+      <p class="hero-texto" id="hero-texto"></p>
+
+      <ol class="linhagem" aria-label="Como as seções se conectam">
+        <li><a href="#laboratorio"><strong>Laboratório</strong><span>onde eu testo</span></a></li>
+        <li><a href="#projetos"><strong>Projetos</strong><span>onde eu construo</span></a></li>
+        <li><a href="#publicacoes"><strong>Publicações</strong><span>onde eu registro</span></a></li>
+        <li><a href="#colaboracoes"><strong>Colaborações</strong><span>onde eu converso</span></a></li>
+      </ol>
+      <p class="hero-nota">Cada seção alimenta a seguinte: um teste vira projeto, o projeto vira guia, o guia abre conversa.</p>
+    </section>
+
+    <section id="projetos" aria-labelledby="t-projetos">
+      <div class="secao-cab">
+        <h2 id="t-projetos">Projetos</h2>
+        <p>Trabalhos maiores, com objetivo, decisões e resultado.</p>
+      </div>
+      <div id="lista-projetos" class="projetos"></div>
+    </section>
+
+    <section id="laboratorio" aria-labelledby="t-lab">
+      <div class="secao-cab">
+        <h2 id="t-lab">Laboratório</h2>
+        <p>Experimentos pequenos, ferramentas de uma página e rascunhos. Funcionam sozinhos e podem ficar incompletos.</p>
+      </div>
+      <ul id="lista-lab" class="lab"></ul>
+    </section>
+
+    <section id="publicacoes" aria-labelledby="t-pub">
+      <div class="secao-cab">
+        <h2 id="t-pub">Publicações</h2>
+        <p>Guias e livros para ler, baixar e compartilhar.</p>
+      </div>
+      <div id="lista-pub" class="pub"></div>
+    </section>
+
+    <section id="colaboracoes" aria-labelledby="t-col">
+      <div class="secao-cab">
+        <h2 id="t-col">Ideias e colaborações</h2>
+        <p id="colab-texto"></p>
+      </div>
+      <ul id="lista-ideias" class="ideias"></ul>
+      <p class="chamada"><a class="botao" id="colab-email" href="#">Falar comigo no LinkedIn</a> <a class="botao botao-sec" id="colab-gh" href="#">Abrir uma conversa no GitHub</a></p>
+    </section>
+
+    <section id="curriculo" aria-labelledby="t-cv">
+      <div class="secao-cab">
+        <h2 id="t-cv">Resumo profissional</h2>
+        <p id="cv-resumo"></p>
+      </div>
+      <ol class="tempo" id="cv-experiencia" aria-label="Trajetória profissional"></ol>
+      <div class="cv-colunas">
+        <div>
+          <h3>Competências</h3>
+          <dl id="cv-competencias" class="comp"></dl>
+        </div>
+        <div>
+          <h3>Formação</h3>
+          <ul id="cv-formacao" class="formacao"></ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="rodape">
+      <p>© <span id="ano"></span> Nestor Araujo. Os projetos e opiniões aqui são pessoais.</p>
+    </footer>
+  </main>
+
+  <dialog id="detalhe" aria-labelledby="detalhe-titulo">
+    <form method="dialog" class="detalhe-cab">
+      <h3 id="detalhe-titulo"></h3>
+      <button class="fechar" aria-label="Fechar detalhes">Fechar</button>
+    </form>
+    <div id="detalhe-corpo"></div>
+  </dialog>
+
+  <noscript><p class="sem-js">Este site usa JavaScript para montar as listas. Ative-o ou veja o repositório no GitHub.</p></noscript>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
